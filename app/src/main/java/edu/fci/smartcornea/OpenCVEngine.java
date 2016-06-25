@@ -65,9 +65,11 @@ public class OpenCVEngine {
     }
 
     public void loadRecognizer(String filename) {
+        faceRecognizer.load(filename);
     }
 
     public void saveRecognizer(String filename) {
+        faceRecognizer.save(filename);
     }
 
     public int predict(Mat faceGray) {
