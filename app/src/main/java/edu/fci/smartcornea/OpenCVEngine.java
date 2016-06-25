@@ -73,6 +73,9 @@ public class OpenCVEngine {
     }
 
     public int predict(Mat faceGray) {
+        Mat temp = new Mat(Constant.LBPH_FaceSize, faceGray.type());
+        Imgproc.resize(faceGray, temp, Constant.LBPH_FaceSize);
+        faceGray = temp;
         int []label = new int[1];
         double []confidence = new double[1];
         faceRecognizer.predict(faceGray, label, confidence);

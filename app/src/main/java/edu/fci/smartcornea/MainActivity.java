@@ -2,8 +2,6 @@ package edu.fci.smartcornea;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -12,16 +10,12 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Rect;
-import org.opencv.face.Face;
-import org.opencv.face.FaceRecognizer;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.utils.Converters;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,7 +30,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
     private Mat mRgba;
     private Mat mGray;
-    private OpenCVEngine openCVEngine;
+    private OpenCVEngine mOpenCVEngine;
 
     private float mRelativeFaceSize = 0.2f;
     private int mAbsoluteFaceSize = 0;
@@ -68,7 +62,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                         is.close();
                         os.close();
 
-                        openCVEngine = new OpenCVEngine(mCascadeFile.getAbsolutePath(), 0,
+                        mOpenCVEngine = new OpenCVEngine(mCascadeFile.getAbsolutePath(), 0,
                                 Constant.LBPH_RADIUS, Constant.LBPH_NEIGHBORS, Constant.LBPH_GRID_X,
                                 Constant.LBPH_GRID_Y, Constant.LBPH_THRESHOLD);
 
@@ -86,7 +80,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                             faces.add(faceMat);
                             List<Integer> labels = new ArrayList<>();
                             labels.add(0);
-                            openCVEngine.trainRecognizer(faces, labels);
+                            mOpenCVEngine.trainRecognizer(faces, labels);
 
                             is.close();
                             os.close();
@@ -170,17 +164,20 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             if (Math.round(height * mRelativeFaceSize) > 0) {
                 mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
             }
-            openCVEngine.setDetectorMinFaceSize(mAbsoluteFaceSize);
+            mOpenCVEngine.setDetectorMinFaceSize(mAbsoluteFaceSize);
         }
 
         MatOfRect faces = new MatOfRect();
 
-        if (openCVEngine != null)
-            openCVEngine.detect(mGray, faces);
+        if (mOpenCVEngine != null)
+            mOpenCVEngine.detect(mGray, faces);
 
         Rect[] facesArray = faces.toArray();
         for (int i = 0; i < facesArray.length; i++) {
-            int id = openCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
+            if(facesArray[i].width < 0 || facesArray[i].height < 0) {
+                continue;
+            }
+            int id = mOpenCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
                     facesArray[i].x, facesArray[i].x + facesArray[i].width));
             Imgproc.putText(mRgba, String.valueOf(id), facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
             Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 3);
