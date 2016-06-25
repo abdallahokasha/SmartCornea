@@ -24,7 +24,7 @@ android {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             commandLine 'ndk-build.cmd', '-C', file('src/main').absolutePath
         } else {
-            commandLine '/home/kogo/Android/Sdk/ndk-bundle/ndk-build', '-C', file('src/main').absolutePath
+            commandLine '/home/mosa/Apps/android-sdk/ndk-bundle/ndk-build', '-C', file('src/main').absolutePath
         }
     }
 

@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/home/mosa/Development/GP/SmartCornea/OpenCVSdk310/src/main/assets"/><source path="/home/mosa/Development/GP/SmartCornea/OpenCVSdk310/build/generated/assets/shaders/debug"/></dataSet><dataSet config="debug"><source path="/home/mosa/Development/GP/SmartCornea/OpenCVSdk310/src/debug/assets"/></dataSet></merger>
