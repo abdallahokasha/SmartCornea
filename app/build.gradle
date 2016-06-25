@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "edu.fci.smartcornea"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 15
         versionCode 1
         versionName "1.0"
@@ -24,7 +24,7 @@ android {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             commandLine 'ndk-build.cmd', '-C', file('src/main').absolutePath
         } else {
-            commandLine '/home/mosa/Apps/android-sdk/ndk-bundle/ndk-build', '-C', file('src/main').absolutePath
+            commandLine '/home/kogo/Android/Sdk/ndk-bundle/ndk-build', '-C', file('src/main').absolutePath
         }
     }
 
@@ -45,4 +45,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile project(':OpenCVSdk310')
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
+    compile 'io.reactivex:rxandroid:1.2.0'
+    compile 'io.reactivex:rxjava:1.1.5'
 }

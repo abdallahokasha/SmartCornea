@@ -1,4 +1,4 @@
-package org.opencv.samples.smartcornea;
+package edu.fci.smartcornea;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,7 +24,7 @@ public class DomainsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.domains_activity);
+        setContentView(R.layout.activity_domains);
 
         dropdown = (Spinner) findViewById(R.id.domains_dropdown);
         items = new ArrayList<>();

@@ -1,4 +1,4 @@
-package org.opencv.samples.smartcornea;
+package edu.fci.smartcornea;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/OpenCVSdk310/OpenCVSdk310.iml" filepath="$PROJECT_DIR$/OpenCVSdk310/OpenCVSdk310.iml" />
       <module fileurl="file://$PROJECT_DIR$/SmartCornea.iml" filepath="$PROJECT_DIR$/SmartCornea.iml" />
-      <module fileurl="file://$PROJECT_DIR$/openCVSamplefacedetection/openCVSamplefacedetection.iml" filepath="$PROJECT_DIR$/openCVSamplefacedetection/openCVSamplefacedetection.iml" />
-      <module fileurl="file://$PROJECT_DIR$/openCVSdk310/openCVSdk310.iml" filepath="$PROJECT_DIR$/openCVSdk310/openCVSdk310.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>
