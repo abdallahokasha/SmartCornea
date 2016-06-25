@@ -2,6 +2,8 @@ package edu.fci.smartcornea;
 
 import android.app.Activity;
 import android.content.Context;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -110,11 +112,14 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_main);
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.main_activity_surface_view);
-        mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(this);
+        Intent intent = new Intent(this.getApplicationContext(), DomainsActivity.class);
+        startActivity(intent);
+
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        setContentView(R.layout.activity_main);
+//        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.main_activity_surface_view);
+//        mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
+//        mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
     @Override
