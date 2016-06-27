@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.WindowManager;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -25,9 +24,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class MainActivity extends Activity /* implements CameraBridgeViewBase.CvCameraViewListener2 */ {
 
     private static final String TAG = "MainActivity";
+
+    private static Communicator instance;
 
     private Mat mRgba;
     private Mat mGray;
@@ -111,7 +112,9 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
-        Intent intent = new Intent(this.getApplicationContext(), DomainsActivity.class);
+//        Log.v("FUCK", "FOR FUCK's SAKE");
+//        Communicator.greeting();
+        Intent intent = new Intent(this.getApplicationContext(), LoginActivity.class);
         startActivity(intent);
 
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -146,43 +149,43 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         mOpenCvCameraView.disableView();
     }
 
-    @Override
-    public void onCameraViewStarted(int width, int height) {
-        mGray = new Mat();
-        mRgba = new Mat();
-    }
-
-    @Override
-    public void onCameraViewStopped() {
-        mGray.release();
-        mRgba.release();
-    }
-
-    @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        mRgba = inputFrame.rgba();
-        mGray = inputFrame.gray();
-
-        if (mAbsoluteFaceSize == 0) {
-            int height = mGray.rows();
-            if (Math.round(height * mRelativeFaceSize) > 0) {
-                mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
-            }
-            openCVEngine.setDetectorMinFaceSize(mAbsoluteFaceSize);
-        }
-
-        MatOfRect faces = new MatOfRect();
-
-        if (openCVEngine != null)
-            openCVEngine.detect(mGray, faces);
-
-        Rect[] facesArray = faces.toArray();
-        for (int i = 0; i < facesArray.length; i++) {
-            int id = openCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
-                    facesArray[i].x, facesArray[i].x + facesArray[i].width));
-            Imgproc.putText(mRgba, String.valueOf(id), facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
-            Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 3);
-        }
-        return mRgba;
-    }
+//    @Override
+//    public void onCameraViewStarted(int width, int height) {
+//        mGray = new Mat();
+//        mRgba = new Mat();
+//    }
+//
+//    @Override
+//    public void onCameraViewStopped() {
+//        mGray.release();
+//        mRgba.release();
+//    }
+//
+//    @Override
+//    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+//        mRgba = inputFrame.rgba();
+//        mGray = inputFrame.gray();
+//
+//        if (mAbsoluteFaceSize == 0) {
+//            int height = mGray.rows();
+//            if (Math.round(height * mRelativeFaceSize) > 0) {
+//                mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
+//            }
+//            openCVEngine.setDetectorMinFaceSize(mAbsoluteFaceSize);
+//        }
+//
+//        MatOfRect faces = new MatOfRect();
+//
+//        if (openCVEngine != null)
+//            openCVEngine.detect(mGray, faces);
+//
+//        Rect[] facesArray = faces.toArray();
+//        for (int i = 0; i < facesArray.length; i++) {
+//            int id = openCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
+//                    facesArray[i].x, facesArray[i].x + facesArray[i].width));
+//            Imgproc.putText(mRgba, String.valueOf(id), facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
+//            Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 3);
+//        }
+//        return mRgba;
+//    }
 }
