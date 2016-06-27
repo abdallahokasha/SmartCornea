@@ -2,7 +2,6 @@ package edu.fci.smartcornea;
 
 import android.app.Activity;
 import android.content.Context;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,9 +25,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class MainCameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MainCameraActivity";
 
     private Mat mRgba;
     private Mat mGray;
@@ -104,7 +103,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         }
     };
 
-    public MainActivity() {
+    public MainCameraActivity() {
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
 
@@ -112,14 +111,12 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
-        Intent intent = new Intent(this.getApplicationContext(), LoginActivity.class);
-        startActivity(intent);
 
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//        setContentView(R.layout.activity_main);
-//        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.main_activity_surface_view);
-//        mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
-//        mOpenCvCameraView.setCvCameraViewListener(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setContentView(R.layout.activity_main);
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.main_activity_surface_view);
+        mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
+        mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
     @Override
