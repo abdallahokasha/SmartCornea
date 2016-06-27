@@ -21,10 +21,11 @@ android {
 
     // call regular ndk-build(.cmd) script from app directory
     task ndkBuild(type: Exec) {
+        def ndkPath = "$System.env.ANDROID_NDK_PATH"
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine 'ndk-build.cmd', '-C', file('src/main').absolutePath
+            commandLine ndkPath + '/ndk-build.cmd', '-C', file('src/main').absolutePath
         } else {
-            commandLine '/home/kogo/Android/Sdk/ndk-bundle/ndk-build', '-C', file('src/main').absolutePath
+            commandLine ndkPath + '/ndk-build', '-C', file('src/main').absolutePath
         }
     }
 

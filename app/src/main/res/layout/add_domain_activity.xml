@@ -4,10 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/horizontal_page_margin"
-    android:paddingRight="@dimen/horizontal_page_margin"
-    android:paddingTop="@dimen/vertical_page_margin"
-    android:paddingBottom="@dimen/vertical_page_margin"
     >
 
 

@@ -6,7 +6,7 @@ OPENCV_CAMERA_MODULES:=on
 OPENCV_INSTALL_MODULES:=on
 OPENCV_LIB_TYPE:=SHARED
 
-include /home/kogo/OpenCV-android-sdk/sdk/native/jni/OpenCV.mk
+include $(OPENVC_SDK_PATH)/sdk/native/jni/OpenCV.mk
 
 LOCAL_SRC_FILES  := OpenCVEngine_jni.cpp
 LOCAL_C_INCLUDES += $(LOCAL_PATH)

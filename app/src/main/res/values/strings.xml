@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <string name="app_name">OCV Face Detection</string>
+    <string name="app_name">SmartCornea</string>
     <string name="domains_label">Select Domain</string>
     <string name="add_new_domain_button">Add Domain</string>
     <string name="select_domain_button">Select Domain</string>
