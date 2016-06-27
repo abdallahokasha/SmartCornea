@@ -39,7 +39,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
-    private BaseLoaderCallback mLoadertCallback = new BaseLoaderCallback(this) {
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
