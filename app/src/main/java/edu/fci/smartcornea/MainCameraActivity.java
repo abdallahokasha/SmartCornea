@@ -220,8 +220,8 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
     }
 
     public void saveClicked(View view) {
-        // ((BitmapDrawable)img.getDrawable()).getBitmap();
         Intent intent = new Intent(this, SavePersonActivity.class);
+        intent.putExtra("images", mTrainingImages);
         startActivity(intent);
         isTraining = false;
         updateView();
