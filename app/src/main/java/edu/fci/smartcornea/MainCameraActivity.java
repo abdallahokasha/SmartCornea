@@ -3,6 +3,7 @@ package edu.fci.smartcornea;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Rect;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
@@ -79,12 +81,25 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                                 Constant.LBPH_GRID_Y, Constant.LBPH_THRESHOLD);
 
                         // load template file from application context
-                        File mTemplateFile = new File(tempDir, "template.xml");
-                        is = getResources().openRawResource(R.raw.template);
-                        os = new FileOutputStream(mTemplateFile);
-                        writeFromFile(is, os);
-                        mOpenCVEngine.loadRecognizer(mTemplateFile.getAbsolutePath());
-
+                        AssetManager assetManager = getAssets();
+                        ArrayList<Mat> faces = new ArrayList<>();
+                        ArrayList<Integer> labels = new ArrayList<>();
+                        for(int subject = 1; subject <= 40; ++subject) {
+                            for(int id = 1; id <= 10; ++id) {
+                                is = assetManager.open("s" + subject + "/" + id + ".pgm");
+                                File mImageFile = new File(tempDir, "s" + subject + "-" + id + ".pgm");
+                                os = new FileOutputStream(mImageFile);
+                                writeFromFile(is, os);
+                                Mat faceMat = Imgcodecs.imread(mImageFile.getAbsolutePath());
+                                Imgproc.cvtColor(faceMat, faceMat, Imgproc.COLOR_RGBA2GRAY);
+                                faces.add(faceMat);
+                                labels.add(subject);
+                            }
+                        }
+                        mOpenCVEngine.trainRecognizer(faces, labels);
+                        for(int subject = 1; subject <= 40; ++subject) {
+                            mOpenCVEngine.setLabelInfo(subject, "Subject" + subject);
+                        }
                         tempDir.delete();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -197,7 +212,11 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                 try {
                     int id = mOpenCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
                             facesArray[i].x, facesArray[i].x + facesArray[i].width));
-                    Imgproc.putText(mRgba, String.valueOf(id), facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
+                    String name = mOpenCVEngine.getLabelInfo(id);
+                    if(name.isEmpty()) {
+                        name = "Unknown";
+                    }
+                    Imgproc.putText(mRgba, name, facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
                 }catch (Exception e) {}
             }
         }
@@ -229,7 +248,7 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
             }
             mOpenCVEngine.updateRecognizer(imagesMat, labels);
             mOpenCVEngine.setLabelInfo(label, personName);
-            Toast.makeText(this.getApplicationContext(), "Person Added Successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getApplicationContext(), "Person Added Successfully, id = " + label, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -334,6 +353,6 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                     mCancelButton.setVisibility(View.INVISIBLE);
                 }
             }
-        }, 500);
+        }, 5000);
     }
 }
