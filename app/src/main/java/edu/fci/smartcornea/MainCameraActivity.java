@@ -2,10 +2,13 @@ package edu.fci.smartcornea;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -15,15 +18,12 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Rect;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainCameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
@@ -37,6 +37,10 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
     private int mAbsoluteFaceSize = 0;
 
     private CameraBridgeViewBase mOpenCvCameraView;
+    private RelativeLayout mTrainingImagesLayout;
+    private Button mTrainButton;
+    private Button mCaptureButton;
+    private boolean isTraining = false;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -51,43 +55,23 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                     try {
                         // load cascade file from application resources
                         InputStream is = getResources().openRawResource(R.raw.lbpcascade_frontalface);
-                        File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
-                        File mCascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
+                        File tempDir = getDir("tempDir", Context.MODE_PRIVATE);
+                        File mCascadeFile = new File(tempDir, "lbpcascade_frontalface.xml");
                         FileOutputStream os = new FileOutputStream(mCascadeFile);
-
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = is.read(buffer)) != -1) {
-                            os.write(buffer, 0, bytesRead);
-                        }
-                        is.close();
-                        os.close();
+                        writeFromFile(is, os);
 
                         mOpenCVEngine = new OpenCVEngine(mCascadeFile.getAbsolutePath(), 0,
                                 Constant.LBPH_RADIUS, Constant.LBPH_NEIGHBORS, Constant.LBPH_GRID_X,
                                 Constant.LBPH_GRID_Y, Constant.LBPH_THRESHOLD);
 
-                        { // train your dragon
-                            is = getResources().openRawResource(R.raw.face);
-                            mCascadeFile = new File(cascadeDir, "face.pgm");
-                            os = new FileOutputStream(mCascadeFile);
+                        // load template file from application context
+                        File mTemplateFile = new File(tempDir, "template.xml");
+                        is = getResources().openRawResource(R.raw.template);
+                        os = new FileOutputStream(mTemplateFile);
+                        writeFromFile(is, os);
+                        mOpenCVEngine.loadRecognizer(mTemplateFile.getAbsolutePath());
 
-                            while ((bytesRead = is.read(buffer)) != -1) {
-                                os.write(buffer, 0, bytesRead);
-                            }
-                            Mat faceMat = Imgcodecs.imread(mCascadeFile.getAbsolutePath());
-                            Imgproc.cvtColor(faceMat, faceMat, Imgproc.COLOR_RGBA2GRAY);
-                            List<Mat> faces = new ArrayList<>();
-                            faces.add(faceMat);
-                            List<Integer> labels = new ArrayList<>();
-                            labels.add(0);
-                            mOpenCVEngine.trainRecognizer(faces, labels);
-
-                            is.close();
-                            os.close();
-                        }
-
-                        cascadeDir.delete();
+                        tempDir.delete();
                     } catch (IOException e) {
                         e.printStackTrace();
                         Log.e(TAG, "Failed to load cascade. Exception thrown: " + e);
@@ -117,6 +101,11 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.main_activity_surface_view);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+
+        mTrainingImagesLayout = (RelativeLayout) findViewById(R.id.training_images_layout);
+        mTrainButton = (Button) findViewById(R.id.train_button);
+        mCaptureButton = (Button) findViewById(R.id.capture_button);
+        updateView();
     }
 
     @Override
@@ -185,5 +174,49 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
             Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 3);
         }
         return mRgba;
+    }
+
+    private void writeFromFile(InputStream is, FileOutputStream os) {
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        try {
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            is.close();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateView() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int totalHeight = getWindow().getDecorView().getHeight();
+                if(isTraining) {
+                    mOpenCvCameraView.setLayoutParams(new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.MATCH_PARENT,
+                            totalHeight / 2
+                    ));
+                    mTrainingImagesLayout.setLayoutParams(new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.MATCH_PARENT,
+                            totalHeight * 4 / 10
+                    ));
+                    mTrainingImagesLayout.setVisibility(View.VISIBLE);
+                    mCaptureButton.setVisibility(View.VISIBLE);
+                    mTrainButton.setVisibility(View.INVISIBLE);
+                }else {
+                    mOpenCvCameraView.setLayoutParams(new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.MATCH_PARENT,
+                            totalHeight * 9 / 10
+                    ));
+                    mTrainButton.setVisibility(View.VISIBLE);
+                    mTrainingImagesLayout.setVisibility(View.INVISIBLE);
+                    mCaptureButton.setVisibility(View.INVISIBLE);
+                }
+            }
+        }, 500);
     }
 }

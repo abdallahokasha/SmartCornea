@@ -1,24 +1,14 @@
 package edu.fci.smartcornea;
 
-
-import java.util.List;
-
-import retrofit2.http.GET;
-import retrofit2.http.Query;
-import rx.Observable;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
 
 public interface MyAPIEndPointInterface {
 
+    @POST("api/v1/sessions/register")
+    Call<User> register(@Body User user);
 
-
-    @GET("api/v1/sessions/kogo")
-    Observable<String> greeting(@Query("") String name);
-
-    @GET("login")
-    Observable<Boolean> loginService(@Query("username") String username,
-                                     @Query("password") String password);
-
-    @GET("get-domains")
-    Observable<List<String>> getDomains(@Query("username") String username);
-
+    @POST("api/v1/sessions/login")
+    Call<User> login(@Body User user);
 }

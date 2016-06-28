@@ -82,6 +82,10 @@ public class OpenCVEngine {
         return label[0];
     }
 
+    public String getLabelInfo(int id) {
+        return faceRecognizer.getLabelInfo(id);
+    }
+
     @Override
     protected void finalize() {
         nativeDestroyDetector(mNativeDetector);

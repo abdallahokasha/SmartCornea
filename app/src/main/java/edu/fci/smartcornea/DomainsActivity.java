@@ -16,15 +16,12 @@ public class DomainsActivity extends Activity {
 
     private final int NEW_DOMAIN_NAME_REQUEST_CODE = 0;
     private Spinner dropdown;
-    private List<String> items;
-
+    private ArrayList<String> items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_domains);
-        Log.v("FUCK", "DOMAINS FUCK");
-//        Communicator.greeting();
         dropdown = (Spinner) findViewById(R.id.domains_dropdown);
         items = new ArrayList<>();
         items.add("Friends");
@@ -38,6 +35,7 @@ public class DomainsActivity extends Activity {
 
     public void addDomainButton(View view) {
         Intent intent = new Intent(this, AddDomainActivity.class);
+        intent.putExtra("currentDomains", items);
         startActivityForResult(intent, NEW_DOMAIN_NAME_REQUEST_CODE);
     }
 
@@ -46,13 +44,17 @@ public class DomainsActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEW_DOMAIN_NAME_REQUEST_CODE && resultCode == RESULT_OK) {
-            items.add(data.getStringExtra("newDomainName"));
+            String domainName = data.getStringExtra("newDomainName");
+            items.add(domainName);
+            // TODO: create file b esm el domain da
             Toast.makeText(this.getApplicationContext(), "Domain Added Successfully", Toast.LENGTH_SHORT).show();
         }
     }
 
 
     public void selectDomain(View view) {
+        Intent intent = new Intent(this, MainCameraActivity.class);
+        startActivity(intent);
         /**
          * TODO
          * get the selected domain and send it through network
