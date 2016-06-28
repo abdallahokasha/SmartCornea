@@ -13,5 +13,5 @@ public abstract class Constant {
     public static final Integer LBPH_GRID_X = 8;
     public static final Integer LBPH_GRID_Y = 8;
     public static final Double LBPH_THRESHOLD = 180.0;
-    public static final Size LBPH_FaceSize = new Size(150, 150);
+    public static final Size LBPH_FaceSize = new Size(92, 112);
 }
