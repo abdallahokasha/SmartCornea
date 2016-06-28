@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -24,6 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 public class MainCameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
@@ -37,10 +40,12 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
     private int mAbsoluteFaceSize = 0;
 
     private CameraBridgeViewBase mOpenCvCameraView;
-    private RelativeLayout mTrainingImagesLayout;
+    private LinearLayout mTrainingImagesLayout;
     private Button mTrainButton;
     private Button mCaptureButton;
     private boolean isTraining = false;
+
+    private ArrayList<ImageView> mTrainingImages;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -102,7 +107,7 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        mTrainingImagesLayout = (RelativeLayout) findViewById(R.id.training_images_layout);
+        mTrainingImagesLayout = (LinearLayout) findViewById(R.id.training_images_layout);
         mTrainButton = (Button) findViewById(R.id.train_button);
         mCaptureButton = (Button) findViewById(R.id.capture_button);
         updateView();
@@ -174,6 +179,20 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
             Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 3);
         }
         return mRgba;
+    }
+
+    public void trainClicked(View view) {
+        isTraining = true;
+        mTrainingImages = new ArrayList<>();
+        updateView();
+    }
+
+    public void captureClicked(View view) {
+        ImageView img = new ImageView(this);
+        img.setImageResource(R.mipmap.ic_launcher);
+        img.setId(mTrainingImages.size());
+        mTrainingImages.add(img);
+        mTrainingImagesLayout.addView(mTrainingImages.get(mTrainingImages.size() - 1));
     }
 
     private void writeFromFile(InputStream is, FileOutputStream os) {
