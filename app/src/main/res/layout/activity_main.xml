@@ -31,12 +31,32 @@
         />
 
     <Button
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_below="@id/training_images_layout"
+        android:visibility="invisible"
+        android:onClick="saveClicked"
+        />
+    <Button
         android:id="@+id/capture_button"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Capture"
         android:layout_below="@id/training_images_layout"
+        android:layout_toRightOf="@id/save_button"
         android:visibility="invisible"
         android:onClick="captureClicked"
+        />
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:layout_below="@id/training_images_layout"
+        android:layout_toRightOf="@id/capture_button"
+        android:visibility="invisible"
+        android:onClick="cancelClicked"
         />
 </RelativeLayout>

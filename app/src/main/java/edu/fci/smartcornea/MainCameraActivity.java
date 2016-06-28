@@ -2,17 +2,19 @@ package edu.fci.smartcornea;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -22,7 +24,6 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
@@ -46,7 +47,9 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
     private CameraBridgeViewBase mOpenCvCameraView;
     private LinearLayout mTrainingImagesLayout;
     private Button mTrainButton;
+    private Button mSaveButton;
     private Button mCaptureButton;
+    private Button mCancelButton;
     private boolean isTraining = false;
     private boolean captureNow = false;
 
@@ -114,7 +117,9 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
 
         mTrainingImagesLayout = (LinearLayout) findViewById(R.id.training_images_layout);
         mTrainButton = (Button) findViewById(R.id.train_button);
+        mSaveButton = (Button) findViewById(R.id.save_button);
         mCaptureButton = (Button) findViewById(R.id.capture_button);
+        mCancelButton = (Button) findViewById(R.id.cancel_button);
         updateView();
     }
 
@@ -174,7 +179,6 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
             mOpenCVEngine.detect(mGray, faces);
 
         if(isTraining) {
-            Imgproc.rectangle(mRgba, new Point(5, 5), new Point(300, 300), Constant.FACE_RECT_COLOR, 2);
             Rect[] facesArray = faces.toArray();
             if(captureNow) {
                 if(facesArray.length == 1) {
@@ -189,14 +193,18 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
         }else {
             Rect[] facesArray = faces.toArray();
             for (int i = 0; i < facesArray.length; i++) {
-                if (facesArray[i].width < 0 || facesArray[i].height < 0) {
-                    continue;
-                }
-                int id = mOpenCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
-                        facesArray[i].x, facesArray[i].x + facesArray[i].width));
-                Imgproc.putText(mRgba, String.valueOf(id), facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
-                Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 2);
+                try {
+                    int id = mOpenCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
+                            facesArray[i].x, facesArray[i].x + facesArray[i].width));
+                    Imgproc.putText(mRgba, String.valueOf(id), facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
+                }catch (Exception e) {}
             }
+        }
+        Rect[] facesArray = faces.toArray();
+        for (int i = 0; i < facesArray.length; i++) {
+            try {
+                Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 2);
+            }catch(Exception e) {}
         }
         return mRgba;
     }
@@ -204,23 +212,35 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
     public void trainClicked(View view) {
         isTraining = true;
         mTrainingImages = new ArrayList<>();
+        if(mTrainingImagesLayout.getChildCount() > 0) {
+            mTrainingImagesLayout.removeAllViewsInLayout();
+            mTrainingImagesLayout.postInvalidate();
+        }
+        updateView();
+    }
+
+    public void saveClicked(View view) {
+        // ((BitmapDrawable)img.getDrawable()).getBitmap();
+        Intent intent = new Intent(this, SavePersonActivity.class);
+        startActivity(intent);
+        isTraining = false;
         updateView();
     }
 
     public void captureClicked(View view) {
         captureNow = true;
-//        ImageView img = new ImageView(this);
-//        img.setImageResource(R.mipmap.ic_launcher);
-//        img.setId(mTrainingImages.size());
-//        mTrainingImages.add(img);
-//        mTrainingImagesLayout.addView(mTrainingImages.get(mTrainingImages.size() - 1));
+    }
+
+    public void cancelClicked(View view) {
+        isTraining = false;
+        updateView();
     }
 
     private void addNewImage(Mat image) {
         Bitmap bmp = Bitmap.createBitmap(image.cols(), image.height(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(image, bmp);
         ImageView img = new ImageView(this);
-        img.setImageBitmap(Bitmap.createScaledBitmap(bmp, 72, 72, false));
+        img.setImageBitmap(Bitmap.createScaledBitmap(bmp, 100, 100, false));
         mTrainingImages.add(img);
         runOnUiThread(new Runnable() {
             @Override
@@ -228,6 +248,12 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                 mTrainingImagesLayout.addView(mTrainingImages.get(mTrainingImages.size() - 1));
             }
         });
+        if(mTrainingImages.size() >= 10) {
+            mSaveButton.setEnabled(true);
+            mSaveButton.postInvalidate();
+            mCaptureButton.setEnabled(false);
+            mCaptureButton.postInvalidate();
+        }
     }
 
     private void writeFromFile(InputStream is, FileOutputStream os) {
@@ -254,21 +280,35 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                             RelativeLayout.LayoutParams.MATCH_PARENT,
                             totalHeight * 7 / 10
                     ));
-                    mTrainingImagesLayout.setLayoutParams(new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                             RelativeLayout.LayoutParams.MATCH_PARENT,
                             totalHeight * 2 / 10
-                    ));
+                    );
+                    params.addRule(RelativeLayout.BELOW, R.id.main_activity_surface_view);
+                    mTrainingImagesLayout.setLayoutParams(params);
                     mTrainingImagesLayout.setVisibility(View.VISIBLE);
+                    mSaveButton.setVisibility(View.VISIBLE);
+                    mSaveButton.setEnabled(false);
                     mCaptureButton.setVisibility(View.VISIBLE);
+                    mCaptureButton.setEnabled(true);
+                    mCancelButton.setVisibility(View.VISIBLE);
                     mTrainButton.setVisibility(View.INVISIBLE);
                 }else {
                     mOpenCvCameraView.setLayoutParams(new RelativeLayout.LayoutParams(
                             RelativeLayout.LayoutParams.MATCH_PARENT,
                             totalHeight * 9 / 10
                     ));
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.MATCH_PARENT,
+                            RelativeLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    params.addRule(RelativeLayout.BELOW, R.id.main_activity_surface_view);
+                    mTrainButton.setLayoutParams(params);
                     mTrainButton.setVisibility(View.VISIBLE);
                     mTrainingImagesLayout.setVisibility(View.INVISIBLE);
+                    mSaveButton.setVisibility(View.INVISIBLE);
                     mCaptureButton.setVisibility(View.INVISIBLE);
+                    mCancelButton.setVisibility(View.INVISIBLE);
                 }
             }
         }, 500);
