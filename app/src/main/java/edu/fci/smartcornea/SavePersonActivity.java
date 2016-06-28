@@ -1,30 +1,36 @@
 package edu.fci.smartcornea;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class SavePersonActivity extends Activity {
 
-    private ArrayList<Mat> images_mat;
+    private EditText mPersonNameTextEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayList<ImageView> images = (ArrayList<ImageView>)getIntent().getSerializableExtra("images");
-        images_mat = new ArrayList<>(images.size());
-        for(int i = 0; i < images.size(); ++i) {
-            Bitmap bmp = ((BitmapDrawable)images.get(i).getDrawable()).getBitmap();
-            images_mat.set(i, new Mat());
-            Utils.bitmapToMat(bmp, images_mat.get(i));
+        setContentView(R.layout.activity_save_person);
+        mPersonNameTextEdit = (EditText) findViewById(R.id.person_name_input);
+    }
+
+    public void savePerson(View view) {
+        String personName = mPersonNameTextEdit.getText().toString();
+        if (personName.isEmpty()) {
+            Toast.makeText(SavePersonActivity.this, "Person name can not be empty!", Toast.LENGTH_SHORT).show();
+        }else {
+            Intent intent = new Intent();
+            intent.putExtra("newPersonName", personName);
+            setResult(RESULT_OK, intent);
+            finish();
         }
     }
 }

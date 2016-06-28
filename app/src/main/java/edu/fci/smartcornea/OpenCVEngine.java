@@ -8,6 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 
 import java.util.List;
+import java.util.Random;
 
 public class OpenCVEngine {
 
@@ -84,6 +85,19 @@ public class OpenCVEngine {
 
     public String getLabelInfo(int id) {
         return faceRecognizer.getLabelInfo(id);
+    }
+
+    public void setLabelInfo(int id, String info) {
+        faceRecognizer.setLabelInfo(id, info);
+    }
+
+    public int getRandomLabel() {
+        Random r = new Random();
+        int id;
+        do {
+            id = r.nextInt();
+        }while(!getLabelInfo(id).isEmpty());
+        return id;
     }
 
     @Override

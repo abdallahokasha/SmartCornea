@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SavePersonActivity"
+    >
+
+    <TextView
+        android:id="@+id/person_name_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_person_name"
+        android:textSize="20sp"
+        />
+
+    <EditText
+        android:id="@+id/person_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/person_name_text_view"
+        />
+
+    <Button
+        android:id="@+id/save_person_button"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/person_name_input"
+        android:layout_marginTop="50dp"
+        android:layout_centerInParent="true"
+        android:text="@string/save_person_name"
+        android:onClick="savePerson"
+        />
+
+</RelativeLayout>

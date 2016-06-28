@@ -9,12 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -35,6 +35,7 @@ import java.util.ArrayList;
 
 public class MainCameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
+    private final int NEW_PERSON_NAME_REQUEST_CODE = 0;
     private static final String TAG = "MainCameraActivity";
 
     private Mat mRgba;
@@ -209,6 +210,29 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
         return mRgba;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == NEW_PERSON_NAME_REQUEST_CODE && resultCode == RESULT_OK) {
+            String personName = data.getStringExtra("newPersonName");
+            ArrayList<ImageView> images = mTrainingImages;
+            ArrayList<Mat> imagesMat = new ArrayList<>();
+            ArrayList<Integer> labels = new ArrayList<>();
+            int label = mOpenCVEngine.getRandomLabel();
+            for(int i = 0; i < images.size(); ++i) {
+                Bitmap bmp = ((BitmapDrawable)images.get(i).getDrawable()).getBitmap();
+                Mat face = new Mat();
+                Utils.bitmapToMat(bmp, face);
+                Imgproc.cvtColor(face, face, Imgproc.COLOR_RGBA2GRAY);
+                imagesMat.add(face);
+                labels.add(label);
+            }
+            mOpenCVEngine.updateRecognizer(imagesMat, labels);
+            mOpenCVEngine.setLabelInfo(label, personName);
+            Toast.makeText(this.getApplicationContext(), "Person Added Successfully", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void trainClicked(View view) {
         isTraining = true;
         mTrainingImages = new ArrayList<>();
@@ -221,8 +245,7 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
 
     public void saveClicked(View view) {
         Intent intent = new Intent(this, SavePersonActivity.class);
-        intent.putExtra("images", mTrainingImages);
-        startActivity(intent);
+        startActivityForResult(intent, NEW_PERSON_NAME_REQUEST_CODE);
         isTraining = false;
         updateView();
     }

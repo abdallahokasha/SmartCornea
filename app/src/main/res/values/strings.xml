@@ -7,5 +7,6 @@
     <string name="select_domain_button">Select Domain</string>
     <string name="add_domain_text_view">Enter Domain Name</string>
     <string name="add_domain_button">Add</string>
+    <string name="save_person_name">Enter Person Name</string>
 
 </resources>
