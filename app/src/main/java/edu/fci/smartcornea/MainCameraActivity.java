@@ -2,6 +2,7 @@ package edu.fci.smartcornea;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,14 +12,17 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
@@ -44,6 +48,7 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
     private Button mTrainButton;
     private Button mCaptureButton;
     private boolean isTraining = false;
+    private boolean captureNow = false;
 
     private ArrayList<ImageView> mTrainingImages;
 
@@ -168,15 +173,28 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
         if (mOpenCVEngine != null)
             mOpenCVEngine.detect(mGray, faces);
 
-        Rect[] facesArray = faces.toArray();
-        for (int i = 0; i < facesArray.length; i++) {
-            if(facesArray[i].width < 0 || facesArray[i].height < 0) {
-                continue;
+        if(isTraining) {
+            Imgproc.rectangle(mRgba, new Point(5, 5), new Point(300, 300), Constant.FACE_RECT_COLOR, 2);
+            Rect[] facesArray = faces.toArray();
+            if(captureNow) {
+                if(facesArray.length == 1 && facesArray[0].width > 0 && facesArray[0].height > 0) {
+                    Mat face = mRgba.submat(facesArray[0].y, facesArray[0].y + facesArray[0].height,
+                            facesArray[0].x, facesArray[0].x + facesArray[0].width);
+                    addNewImage(face);
+                }
+                captureNow = false;
             }
-            int id = mOpenCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
-                    facesArray[i].x, facesArray[i].x + facesArray[i].width));
-            Imgproc.putText(mRgba, String.valueOf(id), facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
-            Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 3);
+        }else {
+            Rect[] facesArray = faces.toArray();
+            for (int i = 0; i < facesArray.length; i++) {
+                if (facesArray[i].width < 0 || facesArray[i].height < 0) {
+                    continue;
+                }
+                int id = mOpenCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
+                        facesArray[i].x, facesArray[i].x + facesArray[i].width));
+                Imgproc.putText(mRgba, String.valueOf(id), facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
+                Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 2);
+            }
         }
         return mRgba;
     }
@@ -188,11 +206,26 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
     }
 
     public void captureClicked(View view) {
+        captureNow = true;
+//        ImageView img = new ImageView(this);
+//        img.setImageResource(R.mipmap.ic_launcher);
+//        img.setId(mTrainingImages.size());
+//        mTrainingImages.add(img);
+//        mTrainingImagesLayout.addView(mTrainingImages.get(mTrainingImages.size() - 1));
+    }
+
+    private void addNewImage(Mat image) {
+        Bitmap bmp = Bitmap.createBitmap(image.cols(), image.height(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(image, bmp);
         ImageView img = new ImageView(this);
-        img.setImageResource(R.mipmap.ic_launcher);
-        img.setId(mTrainingImages.size());
+        img.setImageBitmap(bmp);
         mTrainingImages.add(img);
-        mTrainingImagesLayout.addView(mTrainingImages.get(mTrainingImages.size() - 1));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mTrainingImagesLayout.addView(mTrainingImages.get(mTrainingImages.size() - 1));
+            }
+        });
     }
 
     private void writeFromFile(InputStream is, FileOutputStream os) {
