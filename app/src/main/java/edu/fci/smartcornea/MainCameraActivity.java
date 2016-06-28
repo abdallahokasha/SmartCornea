@@ -177,10 +177,12 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
             Imgproc.rectangle(mRgba, new Point(5, 5), new Point(300, 300), Constant.FACE_RECT_COLOR, 2);
             Rect[] facesArray = faces.toArray();
             if(captureNow) {
-                if(facesArray.length == 1 && facesArray[0].width > 0 && facesArray[0].height > 0) {
-                    Mat face = mRgba.submat(facesArray[0].y, facesArray[0].y + facesArray[0].height,
-                            facesArray[0].x, facesArray[0].x + facesArray[0].width);
-                    addNewImage(face);
+                if(facesArray.length == 1) {
+                    try {
+                        Mat face = mRgba.submat(facesArray[0].y, facesArray[0].y + facesArray[0].height,
+                                facesArray[0].x, facesArray[0].x + facesArray[0].width);
+                        addNewImage(face);
+                    }catch (Exception e) {}
                 }
                 captureNow = false;
             }
@@ -218,7 +220,7 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
         Bitmap bmp = Bitmap.createBitmap(image.cols(), image.height(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(image, bmp);
         ImageView img = new ImageView(this);
-        img.setImageBitmap(bmp);
+        img.setImageBitmap(Bitmap.createScaledBitmap(bmp, 72, 72, false));
         mTrainingImages.add(img);
         runOnUiThread(new Runnable() {
             @Override
@@ -250,11 +252,11 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                 if(isTraining) {
                     mOpenCvCameraView.setLayoutParams(new RelativeLayout.LayoutParams(
                             RelativeLayout.LayoutParams.MATCH_PARENT,
-                            totalHeight / 2
+                            totalHeight * 7 / 10
                     ));
                     mTrainingImagesLayout.setLayoutParams(new RelativeLayout.LayoutParams(
                             RelativeLayout.LayoutParams.MATCH_PARENT,
-                            totalHeight * 4 / 10
+                            totalHeight * 2 / 10
                     ));
                     mTrainingImagesLayout.setVisibility(View.VISIBLE);
                     mCaptureButton.setVisibility(View.VISIBLE);
