@@ -194,10 +194,10 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
         if (mOpenCVEngine != null)
             mOpenCVEngine.detect(mGray, faces);
 
-        if(isTraining) {
+        if (isTraining) {
             Rect[] facesArray = faces.toArray();
-            if(captureNow) {
-                if(facesArray.length == 1) {
+            if (captureNow) {
+                if (facesArray.length == 1) {
                     try {
                         Mat face = mRgba.submat(facesArray[0].y, facesArray[0].y + facesArray[0].height,
                                 facesArray[0].x, facesArray[0].x + facesArray[0].width);
@@ -206,25 +206,26 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                 }
                 captureNow = false;
             }
-        }else {
+        } else {
             Rect[] facesArray = faces.toArray();
             for (int i = 0; i < facesArray.length; i++) {
                 try {
-                    int id = mOpenCVEngine.predict(mGray.submat(facesArray[i].y, facesArray[i].y + facesArray[i].height,
+                    int id = mOpenCVEngine.predict(mGray.submat(facesArray[i].y,
+                            facesArray[i].y + facesArray[i].height,
                             facesArray[i].x, facesArray[i].x + facesArray[i].width));
                     String name = mOpenCVEngine.getLabelInfo(id);
                     if(name.isEmpty()) {
                         name = "Unknown";
                     }
                     Imgproc.putText(mRgba, name, facesArray[i].tl(), Core.FONT_HERSHEY_SIMPLEX, 1, Constant.FACE_TEXT_COLOR, 2);
-                }catch (Exception e) {}
+                } catch (Exception e) {}
             }
         }
         Rect[] facesArray = faces.toArray();
         for (int i = 0; i < facesArray.length; i++) {
             try {
                 Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), Constant.FACE_RECT_COLOR, 2);
-            }catch(Exception e) {}
+            } catch(Exception e) {}
         }
         return mRgba;
     }
@@ -290,7 +291,7 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                 mTrainingImagesLayout.addView(mTrainingImages.get(mTrainingImages.size() - 1));
             }
         });
-        if(mTrainingImages.size() >= 10) {
+        if (mTrainingImages.size() >= 10) {
             mSaveButton.setEnabled(true);
             mSaveButton.postInvalidate();
             mCaptureButton.setEnabled(false);
@@ -317,7 +318,7 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
             @Override
             public void run() {
                 int totalHeight = getWindow().getDecorView().getHeight();
-                if(isTraining) {
+                if (isTraining) {
                     mOpenCvCameraView.setLayoutParams(new RelativeLayout.LayoutParams(
                             RelativeLayout.LayoutParams.MATCH_PARENT,
                             totalHeight * 7 / 10
@@ -335,7 +336,7 @@ public class MainCameraActivity extends Activity implements CameraBridgeViewBase
                     mCaptureButton.setEnabled(true);
                     mCancelButton.setVisibility(View.VISIBLE);
                     mTrainButton.setVisibility(View.INVISIBLE);
-                }else {
+                } else {
                     mOpenCvCameraView.setLayoutParams(new RelativeLayout.LayoutParams(
                             RelativeLayout.LayoutParams.MATCH_PARENT,
                             totalHeight * 9 / 10
