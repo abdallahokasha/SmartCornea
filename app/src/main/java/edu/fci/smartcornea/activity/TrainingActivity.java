@@ -44,6 +44,7 @@ public class TrainingActivity extends Activity implements CameraBridgeViewBase.C
     private Button mCaptureButton;
 
     private ArrayList<ImageView> mTrainingImages;
+    private ArrayList<Mat> mGrayTrainingImages;
     private boolean captureNow = false;
 
     public TrainingActivity() {
@@ -67,6 +68,7 @@ public class TrainingActivity extends Activity implements CameraBridgeViewBase.C
 
         mOpenCVEngine = OpenCVEngine.getInstance();
         mTrainingImages = new ArrayList<>();
+        mGrayTrainingImages = new ArrayList<>();
     }
 
     @Override
@@ -122,7 +124,7 @@ public class TrainingActivity extends Activity implements CameraBridgeViewBase.C
         if (captureNow) {
             if (facesArray.length == 1) {
                 try {
-                    addNewImage(mRgba.submat(facesArray[0]));
+                    addNewImage(mRgba.submat(facesArray[0]), mGray.submat(facesArray[0]));
                 }catch (Exception e) {}
             }
             captureNow = false;
@@ -140,21 +142,15 @@ public class TrainingActivity extends Activity implements CameraBridgeViewBase.C
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEW_PERSON_NAME_REQUEST_CODE && resultCode == RESULT_OK) {
             String personName = data.getStringExtra("newPersonName");
-            ArrayList<ImageView> images = mTrainingImages;
-            ArrayList<Mat> imagesMat = new ArrayList<>();
             ArrayList<Integer> labels = new ArrayList<>();
             int label = mOpenCVEngine.getRandomLabel();
-            for(int i = 0; i < images.size(); ++i) {
-                Bitmap bmp = ((BitmapDrawable)images.get(i).getDrawable()).getBitmap();
-                Mat face = new Mat();
-                Utils.bitmapToMat(bmp, face);
-                Imgproc.cvtColor(face, face, Imgproc.COLOR_RGBA2GRAY);
-                imagesMat.add(face);
+            for(int i = 0; i < mGrayTrainingImages.size(); ++i) {
                 labels.add(label);
             }
-            mOpenCVEngine.updateRecognizer(imagesMat, labels);
+            mOpenCVEngine.updateRecognizer(mGrayTrainingImages, labels);
             mOpenCVEngine.setLabelInfo(label, personName);
             Toast.makeText(this.getApplicationContext(), "Person Added Successfully, id = " + label, Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
@@ -171,12 +167,13 @@ public class TrainingActivity extends Activity implements CameraBridgeViewBase.C
         finish();
     }
 
-    private void addNewImage(Mat image) {
-        Bitmap bmp = Bitmap.createBitmap(image.cols(), image.height(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(image, bmp);
+    private void addNewImage(Mat rgbaImage, Mat grayImage) {
+        Bitmap bmp = Bitmap.createBitmap(rgbaImage.cols(), rgbaImage.height(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(rgbaImage, bmp);
         ImageView img = new ImageView(this);
         img.setImageBitmap(Bitmap.createScaledBitmap(bmp, 100, 100, false));
         mTrainingImages.add(img);
+        mGrayTrainingImages.add(grayImage);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

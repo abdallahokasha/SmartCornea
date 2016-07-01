@@ -57,22 +57,16 @@ public class IntroActivity extends Activity {
                         AssetManager assetManager = getAssets();
                         ArrayList<Mat> faces = new ArrayList<>();
                         ArrayList<Integer> labels = new ArrayList<>();
-                        for(int subject = 1; subject <= 25; ++subject) {
-                            for(int id = 1; id <= 7; ++id) {
-                                is = assetManager.open("s" + subject + "/" + id + ".pgm");
-                                File mImageFile = new File(tempDir, "s" + subject + "-" + id + ".pgm");
-                                os = new FileOutputStream(mImageFile);
-                                writeFromFile(is, os);
-                                Mat faceMat = Imgcodecs.imread(mImageFile.getAbsolutePath());
-                                Imgproc.cvtColor(faceMat, faceMat, Imgproc.COLOR_RGBA2GRAY);
-                                faces.add(faceMat);
-                                labels.add(subject);
-                            }
-                        }
+                        is = assetManager.open("unknown.pgm");
+                        File mImageFile = new File(tempDir, "unknown.pgm");
+                        os = new FileOutputStream(mImageFile);
+                        writeFromFile(is, os);
+                        Mat faceMat = Imgcodecs.imread(mImageFile.getAbsolutePath());
+                        Imgproc.cvtColor(faceMat, faceMat, Imgproc.COLOR_RGBA2GRAY);
+                        faces.add(faceMat);
+                        labels.add(0);
                         mOpenCVEngine.trainRecognizer(faces, labels);
-                        for(int subject = 1; subject <= 25; ++subject) {
-                            mOpenCVEngine.setLabelInfo(subject, "Subject" + subject);
-                        }
+                        mOpenCVEngine.setLabelInfo(0, "Subject");
                         tempDir.delete();
                     } catch (IOException e) {
                         e.printStackTrace();

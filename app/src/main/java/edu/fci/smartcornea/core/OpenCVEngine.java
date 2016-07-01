@@ -1,5 +1,7 @@
 package edu.fci.smartcornea.core;
 
+import android.util.Log;
+
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.face.Face;
@@ -61,9 +63,7 @@ public class OpenCVEngine {
 
     public void trainRecognizer(List<Mat> faces, List<Integer> labels) {
         for(int i = 0; i < faces.size(); ++i) {
-            Mat temp = new Mat(Constant.LBPH_FaceSize, faces.get(i).type());
-            Imgproc.resize(faces.get(i), temp, Constant.LBPH_FaceSize);
-            faces.set(i, temp);
+            faces.set(i, resizeImage(faces.get(i)));
         }
         Mat labels_mat = Converters.vector_int_to_Mat(labels);
         faceRecognizer.train(faces, labels_mat);
@@ -71,9 +71,7 @@ public class OpenCVEngine {
 
     public void updateRecognizer(List<Mat> faces, List<Integer> labels) {
         for(int i = 0; i < faces.size(); ++i) {
-            Mat temp = new Mat(Constant.LBPH_FaceSize, faces.get(i).type());
-            Imgproc.resize(faces.get(i), temp, Constant.LBPH_FaceSize);
-            faces.set(i, temp);
+            faces.set(i, resizeImage(faces.get(i)));
         }
         Mat labels_mat = Converters.vector_int_to_Mat(labels);
         faceRecognizer.update(faces, labels_mat);
@@ -88,12 +86,9 @@ public class OpenCVEngine {
     }
 
     public int predict(Mat faceGray) {
-        Mat temp = new Mat(Constant.LBPH_FaceSize, faceGray.type());
-        Imgproc.resize(faceGray, temp, Constant.LBPH_FaceSize);
-        faceGray = temp;
         int []label = new int[1];
         double []confidence = new double[1];
-        faceRecognizer.predict(faceGray, label, confidence);
+        faceRecognizer.predict(resizeImage(faceGray), label, confidence);
         return label[0];
     }
 
@@ -109,7 +104,7 @@ public class OpenCVEngine {
         Random r = new Random();
         int id;
         do {
-            id = r.nextInt();
+            id = r.nextInt(1000000007);
         }while(!getLabelInfo(id).isEmpty());
         return id;
     }
@@ -119,7 +114,13 @@ public class OpenCVEngine {
         releaseDetector();
     }
 
-    // Detector
+    private Mat resizeImage(Mat image) {
+        Mat temp = new Mat(Constant.LBPH_FaceSize, image.type());
+        Imgproc.resize(image, temp, Constant.LBPH_FaceSize);
+        return temp;
+    }
+
+    // Native Detector
     private static native long nativeCreateDetector(String cascadeName, int minFaceSize);
     private static native void nativeDestroyDetector(long thiz);
     private static native void nativeStartDetector(long thiz);
