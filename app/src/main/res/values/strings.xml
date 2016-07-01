@@ -8,5 +8,9 @@
     <string name="add_domain_text_view">Enter Domain Name</string>
     <string name="add_domain_button">Add</string>
     <string name="save_person_name">Enter Person Name</string>
+    <string name="train_button">Train</string>
+    <string name="save_button">Save</string>
+    <string name="capture_button">Capture</string>
+    <string name="cancel_button">Cancel</string>
 
 </resources>

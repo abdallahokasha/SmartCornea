@@ -1,4 +1,4 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,5 +1,6 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.core;
 
+import edu.fci.smartcornea.model.User;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;

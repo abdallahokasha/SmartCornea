@@ -1,4 +1,4 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +9,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import edu.fci.smartcornea.R;
 
 public class DomainsActivity extends Activity {
 
@@ -25,11 +27,10 @@ public class DomainsActivity extends Activity {
         items.add("Friends");
         items.add("Work");
         items.add("Club");
-        // to be removed
+        // TODO: to be removed
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         dropdown.setAdapter(adapter);
     }
-
 
     public void addDomainButton(View view) {
         Intent intent = new Intent(this, AddDomainActivity.class);

@@ -1,10 +1,12 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+
+import edu.fci.smartcornea.R;
 
 public class LoginActivity extends Activity {
 

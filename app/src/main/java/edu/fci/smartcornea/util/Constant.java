@@ -1,9 +1,11 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.util;
 
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 
 public abstract class Constant {
+
+    public static final String SMARTCORNEA_SERVER_URL = "http://192.168.1.5:3000/";
     // Face Detector
     public static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0, 255);
     public static final Scalar FACE_TEXT_COLOR = new Scalar(0, 0, 255, 255);

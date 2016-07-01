@@ -1,14 +1,15 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import edu.fci.smartcornea.R;
 
 public class AddDomainActivity extends Activity {
 
@@ -19,7 +20,7 @@ public class AddDomainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.add_domain_activity);
+        setContentView(R.layout.activity_add_domain);
         items = (ArrayList<String>)getIntent().getSerializableExtra("currentDomains");
     }
 
