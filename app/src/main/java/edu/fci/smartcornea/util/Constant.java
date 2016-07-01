@@ -5,7 +5,9 @@ import org.opencv.core.Size;
 
 public abstract class Constant {
 
-    public static final String SMARTCORNEA_SERVER_URL = "http://192.168.1.5:3000/";
+    public static final String SMARTCORNEA_SERVER_URL = "http://192.168.1.3:3000/";
+    public static final String USER_ID = "user_id";
+    public static final String DOMAIN_ID = "domain_id";
     // Face Detector
     public static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0, 255);
     public static final Scalar FACE_TEXT_COLOR = new Scalar(0, 0, 255, 255);

@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown"
-        android:layout_below="@+id/select_domain_text_view"
+        android:layout_below="@id/select_domain_text_view"
         />
 
     <Button
@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:layout_below="@+id/domains_dropdown"
+        android:layout_below="@id/domains_dropdown"
         android:text="@string/select_domain_button"
         android:onClick="selectDomain"
         />
@@ -37,10 +37,22 @@
         android:id="@+id/add_new_domain_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/select_domain_button"
+        android:layout_below="@id/select_domain_button"
         android:text="@string/add_new_domain_button"
         android:onClick="addDomainButton"
         />
 
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="invisible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
 
 </RelativeLayout>

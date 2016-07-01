@@ -3,7 +3,6 @@ package edu.fci.smartcornea.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,15 +10,11 @@ import android.util.Log;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 import edu.fci.smartcornea.R;
 import edu.fci.smartcornea.core.OpenCVEngine;
@@ -52,21 +47,6 @@ public class IntroActivity extends Activity {
                         mOpenCVEngine.init(mCascadeFile.getAbsolutePath(), 0,
                                 Constant.LBPH_RADIUS, Constant.LBPH_NEIGHBORS, Constant.LBPH_GRID_X,
                                 Constant.LBPH_GRID_Y, Constant.LBPH_THRESHOLD);
-
-                        // load training images from assets
-                        AssetManager assetManager = getAssets();
-                        ArrayList<Mat> faces = new ArrayList<>();
-                        ArrayList<Integer> labels = new ArrayList<>();
-                        is = assetManager.open("unknown.pgm");
-                        File mImageFile = new File(tempDir, "unknown.pgm");
-                        os = new FileOutputStream(mImageFile);
-                        writeFromFile(is, os);
-                        Mat faceMat = Imgcodecs.imread(mImageFile.getAbsolutePath());
-                        Imgproc.cvtColor(faceMat, faceMat, Imgproc.COLOR_RGBA2GRAY);
-                        faces.add(faceMat);
-                        labels.add(0);
-                        mOpenCVEngine.trainRecognizer(faces, labels);
-                        mOpenCVEngine.setLabelInfo(0, "Subject");
                         tempDir.delete();
                     } catch (IOException e) {
                         e.printStackTrace();
