@@ -58,13 +58,13 @@ struct DetectorAgregator {
     }
 };
 
-JNIEXPORT jlong JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeCreateDetector (JNIEnv * jenv, jclass, jstring jFileName, jint faceSize) {
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeCreateDetector enter");
+JNIEXPORT jlong JNICALL Java_edu_fci_smartcornea_core_OpenCVEngine_nativeCreateDetector (JNIEnv * jenv, jclass, jstring jFileName, jint faceSize) {
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeCreateDetector enter");
     const char* jnamestr = jenv->GetStringUTFChars(jFileName, NULL);
     string stdFileName(jnamestr);
     jlong result = 0;
 
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeCreateDetector");
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeCreateDetector");
 
     try {
         Ptr<CascadeDetectorAdapter> mainDetector = makePtr<CascadeDetectorAdapter>(makePtr<CascadeClassifier>(stdFileName));
@@ -86,12 +86,12 @@ JNIEXPORT jlong JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeCreateDetect
         jenv->ThrowNew(je, "Unknown exception in JNI code of OpenCVEngine.nativeCreateDetector()");
         return 0;
     }
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeCreateDetector exit");
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeCreateDetector exit");
     return result;
 }
 
-JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeDestroyDetector(JNIEnv * jenv, jclass, jlong thiz) {
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeDestroyDetector");
+JNIEXPORT void JNICALL Java_edu_fci_smartcornea_core_OpenCVEngine_nativeDestroyDetector(JNIEnv * jenv, jclass, jlong thiz) {
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeDestroyDetector");
     try {
         if(thiz != 0) {
             ((DetectorAgregator*)thiz)->tracker->stop();
@@ -108,11 +108,11 @@ JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeDestroyDetect
         jclass je = jenv->FindClass("java/lang/Exception");
         jenv->ThrowNew(je, "Unknown exception in JNI code of OpenCVEngine.nativeDestroyDetector()");
     }
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeDestroyDetector exit");
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeDestroyDetector exit");
 }
 
-JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeStartDetector(JNIEnv * jenv, jclass, jlong thiz) {
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeStartDetector");
+JNIEXPORT void JNICALL Java_edu_fci_smartcornea_core_OpenCVEngine_nativeStartDetector(JNIEnv * jenv, jclass, jlong thiz) {
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeStartDetector");
     try {
         ((DetectorAgregator*)thiz)->tracker->run();
     }catch(Exception& e) {
@@ -126,11 +126,11 @@ JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeStartDetector
         jclass je = jenv->FindClass("java/lang/Exception");
         jenv->ThrowNew(je, "Unknown exception in JNI code of OpenCVEngine.nativeStartDetector()");
     }
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeStartDetector exit");
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeStartDetector exit");
 }
 
-JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeStopDetector(JNIEnv * jenv, jclass, jlong thiz) {
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeStopDetector");
+JNIEXPORT void JNICALL Java_edu_fci_smartcornea_core_OpenCVEngine_nativeStopDetector(JNIEnv * jenv, jclass, jlong thiz) {
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeStopDetector");
     try {
         ((DetectorAgregator*)thiz)->tracker->stop();
     }catch(Exception& e) {
@@ -144,11 +144,11 @@ JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeStopDetector(
         jclass je = jenv->FindClass("java/lang/Exception");
         jenv->ThrowNew(je, "Unknown exception in JNI code of OpenCVEngine.nativeStopDetector()");
     }
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeStopDetector exit");
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeStopDetector exit");
 }
 
-JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeSetDetectorFaceSize(JNIEnv * jenv, jclass, jlong thiz, jint faceSize) {
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeSetDetectorFaceSize -- BEGIN");
+JNIEXPORT void JNICALL Java_edu_fci_smartcornea_core_OpenCVEngine_nativeSetDetectorFaceSize(JNIEnv * jenv, jclass, jlong thiz, jint faceSize) {
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeSetDetectorFaceSize -- BEGIN");
     try {
         if (faceSize > 0) {
             ((DetectorAgregator*)thiz)->mainDetector->setMinObjectSize(Size(faceSize, faceSize));
@@ -165,12 +165,12 @@ JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeSetDetectorFa
         jclass je = jenv->FindClass("java/lang/Exception");
         jenv->ThrowNew(je, "Unknown exception in JNI code of OpenCVEngine.nativeSetDetectorFaceSize()");
     }
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeSetDetectorFaceSize -- END");
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeSetDetectorFaceSize -- END");
 }
 
 
-JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeDetect(JNIEnv * jenv, jclass, jlong thiz, jlong imageGray, jlong faces) {
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeDetect");
+JNIEXPORT void JNICALL Java_edu_fci_smartcornea_core_OpenCVEngine_nativeDetect(JNIEnv * jenv, jclass, jlong thiz, jlong imageGray, jlong faces) {
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeDetect");
     try {
         vector<Rect> RectFaces;
         ((DetectorAgregator*)thiz)->tracker->process(*((Mat*)imageGray));
@@ -187,7 +187,7 @@ JNIEXPORT void JNICALL Java_edu_fci_smartcornea_OpenCVEngine_nativeDetect(JNIEnv
         jclass je = jenv->FindClass("java/lang/Exception");
         jenv->ThrowNew(je, "Unknown exception in JNI code OpenCVEngine.nativeDetect()");
     }
-    LOGD("Java_edu_fci_smartcornea_OpenCVEngine_nativeDetect END");
+    LOGD("Java_edu_fci_smartcornea_core_OpenCVEngine_nativeDetect END");
 }
 
 // END Face Detection

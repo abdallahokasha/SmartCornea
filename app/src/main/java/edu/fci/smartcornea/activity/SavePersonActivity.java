@@ -1,4 +1,4 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import edu.fci.smartcornea.R;
 
 
 public class SavePersonActivity extends Activity {

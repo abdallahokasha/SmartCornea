@@ -1,4 +1,4 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.core;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -10,15 +10,29 @@ import org.opencv.utils.Converters;
 import java.util.List;
 import java.util.Random;
 
+import edu.fci.smartcornea.util.Constant;
+
 public class OpenCVEngine {
+
+    private static OpenCVEngine openCVEngineInstance = null;
 
     private long mNativeDetector = 0;
     private FaceRecognizer faceRecognizer = null;
 
-    public OpenCVEngine(String cascadeName, int minFaceSize,
-                        int radius, int neighbors, int grid_x, int grid_y, double threshold) {
+    private OpenCVEngine() {
+    }
+
+    public void init(String cascadeName, int minFaceSize,
+                     int radius, int neighbors, int grid_x, int grid_y, double threshold) {
         mNativeDetector = nativeCreateDetector(cascadeName, minFaceSize);
         faceRecognizer = Face.createLBPHFaceRecognizer(radius, neighbors, grid_x, grid_y, threshold);
+    }
+
+    public static OpenCVEngine getInstance() {
+        if(openCVEngineInstance == null) {
+            openCVEngineInstance = new OpenCVEngine();
+        }
+        return openCVEngineInstance;
     }
 
     // Detector
@@ -102,7 +116,7 @@ public class OpenCVEngine {
 
     @Override
     protected void finalize() {
-        nativeDestroyDetector(mNativeDetector);
+        releaseDetector();
     }
 
     // Detector

@@ -3,60 +3,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.fci.smartcornea.MainCameraActivity">
+    tools:context=".activity.TrainingActivity">
 
     <org.opencv.android.JavaCameraView
-        android:id="@+id/main_activity_surface_view"
+        android:id="@+id/training_activity_surface_view"
         android:layout_width="match_parent"
-        android:layout_height="100dp" />
+        android:layout_height="250dp" />
 
     <LinearLayout
         android:id="@+id/training_images_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@id/main_activity_surface_view"
+        android:layout_height="100dp"
+        android:layout_below="@id/training_activity_surface_view"
         android:background="@drawable/background_border"
-        android:visibility="invisible"
         android:orientation="horizontal"
         >
     </LinearLayout>
 
     <Button
-        android:id="@+id/train_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Train"
-        android:layout_below="@id/training_images_layout"
-        android:onClick="trainClicked"
-        />
-
-    <Button
         android:id="@+id/save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save_button"
         android:layout_below="@id/training_images_layout"
-        android:visibility="invisible"
         android:onClick="saveClicked"
+        android:enabled="false"
         />
     <Button
         android:id="@+id/capture_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Capture"
+        android:text="@string/capture_button"
         android:layout_below="@id/training_images_layout"
         android:layout_toRightOf="@id/save_button"
-        android:visibility="invisible"
         android:onClick="captureClicked"
         />
     <Button
         android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel"
+        android:text="@string/cancel_button"
         android:layout_below="@id/training_images_layout"
         android:layout_toRightOf="@id/capture_button"
-        android:visibility="invisible"
         android:onClick="cancelClicked"
         />
 </RelativeLayout>

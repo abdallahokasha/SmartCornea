@@ -1,7 +1,9 @@
-package edu.fci.smartcornea;
+package edu.fci.smartcornea.core;
 
 import android.util.Log;
 
+import edu.fci.smartcornea.model.User;
+import edu.fci.smartcornea.util.Constant;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -12,13 +14,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Communicator {
 
     private static Communicator instance;
-    private String SERVER_URL = "http://192.168.1.5:3000/";
     private static MyAPIEndPointInterface apiservice;
 
     private Communicator() {
         Log.v("Communicator Singleton ", "instance created");
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(SERVER_URL)
+                .baseUrl(Constant.SMARTCORNEA_SERVER_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiservice = retrofit.create(MyAPIEndPointInterface.class);
