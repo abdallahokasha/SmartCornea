@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,30 +25,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.fci.smartcornea.R;
-import edu.fci.smartcornea.core.Communicator;
-import edu.fci.smartcornea.core.DataManager;
 import edu.fci.smartcornea.core.OpenCVEngine;
 import edu.fci.smartcornea.model.Domain;
-import edu.fci.smartcornea.util.Constant;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DomainsActivity extends Activity {
 
     private final int NEW_DOMAIN_NAME_REQUEST_CODE = 0;
     private Spinner dropdown;
     private List<Domain> domains;
-    private Communicator communicator;
-    private DataManager dataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_domains);
         dropdown = (Spinner) findViewById(R.id.domains_dropdown);
-        communicator = Communicator.getInstance();
-        dataManager = DataManager.getInstance();
         loadDomains();
     }
 
@@ -62,24 +53,9 @@ public class DomainsActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEW_DOMAIN_NAME_REQUEST_CODE && resultCode == RESULT_OK) {
             String domainName = data.getStringExtra("newDomainName");
-            communicator.createDomain((String)dataManager.getObject(Constant.USER_ID), new Domain(null, domainName)).enqueue(new Callback<Domain>() {
-                @Override
-                public void onResponse(Call<Domain> call, Response<Domain> response) {
-                    domains.add(response.body());
-                    updateDropDownList();
-                    Toast.makeText(getApplicationContext(), "Domain Added Successfully", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(Call<Domain> call, Throwable t) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(DomainsActivity.this, "Couldn't create domain", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
+            domains.add(new Domain(domains.size(), domainName));
+            updateDropDownList();
+            Toast.makeText(getApplicationContext(), "Domain Added Successfully", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -89,23 +65,15 @@ public class DomainsActivity extends Activity {
             Toast.makeText(DomainsActivity.this, "You must select a domain (or create one if you haven't)", Toast.LENGTH_SHORT).show();
         }else {
             displaySpinner();
-            final String id = String.valueOf(domains.get(index).getId());
-            communicator.loadStateFile(id).enqueue(new Callback<String>() {
+            new Handler().postDelayed(new Runnable() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void run() {
                     removeSpinner();
-                    updateRecognizer(response.body());
-                    dataManager.putObject(Constant.DOMAIN_ID, id);
+                    updateRecognizer("");
                     Intent intent = new Intent(DomainsActivity.this, MainCameraActivity.class);
                     startActivity(intent);
                 }
-
-                @Override
-                public void onFailure(Call<String> call, Throwable t) {
-                    removeSpinner();
-                    Toast.makeText(DomainsActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-                }
-            });
+            }, 1000);
         }
     }
 
@@ -116,25 +84,17 @@ public class DomainsActivity extends Activity {
 
     private void loadDomains() {
         displaySpinner();
-        communicator.listDomains((String) dataManager.getObject(Constant.USER_ID)).enqueue(new Callback<List<Domain>>() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onResponse(Call<List<Domain>> call, Response<List<Domain>> response) {
+            public void run() {
                 removeSpinner();
-                if(response.code() == 200) {
-                    domains = response.body();
-                    updateDropDownList();
-                }else {
-                    Toast.makeText(DomainsActivity.this, "Couldn't load domains!", Toast.LENGTH_SHORT).show();
+                domains = new ArrayList<>();
+                for(int i = 1; i <= 3; ++i) {
+                    domains.add(new Domain(i, "Test " + i));
                 }
+                updateDropDownList();
             }
-
-            @Override
-            public void onFailure(Call<List<Domain>> call, Throwable t) {
-                removeSpinner();
-                Toast.makeText(DomainsActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        });
+        }, 1000);
     }
 
     private ArrayList<String> getDomainsNames() {
