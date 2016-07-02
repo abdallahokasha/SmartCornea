@@ -1,7 +1,5 @@
 package edu.fci.smartcornea.core;
 
-import android.util.Log;
-
 import java.util.List;
 
 import edu.fci.smartcornea.model.Domain;
@@ -18,7 +16,6 @@ public class Communicator {
     private static SmartCorneaAPIInterface apiService;
 
     private Communicator() {
-//        Log.d("Communicator Singleton ", "instance created");
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.SMARTCORNEA_SERVER_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())

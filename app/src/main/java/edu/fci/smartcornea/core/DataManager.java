@@ -21,6 +21,10 @@ public class DataManager {
     }
 
     public Object getObject(String key) {
-        return ourData.get(key);
+        if(ourData.containsKey(key)) {
+            return ourData.get(key);
+        }else {
+            return null;
+        }
     }
 }

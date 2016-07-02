@@ -13,8 +13,6 @@ import edu.fci.smartcornea.core.Communicator;
 import edu.fci.smartcornea.core.DataManager;
 import edu.fci.smartcornea.model.User;
 import edu.fci.smartcornea.util.Constant;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends Activity {
@@ -38,38 +36,21 @@ public class LoginActivity extends Activity {
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
-        communicator.login(new User(null, username, password)).enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                if(response.code() == 200) {
-                    DataManager dm = DataManager.getInstance();
-                    dm.putObject(Constant.USER_ID, String.valueOf(response.body().getId()));
-                    Intent intent = new Intent(LoginActivity.this, DomainsActivity.class);
-                    startActivity(intent);
-                }else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(LoginActivity.this, "Invalid username or password!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+        try {
+            Response<User> response = communicator.login(new User(null, username, password)).execute();
+            if(response.code() == 200) {
+                DataManager dm = DataManager.getInstance();
+                dm.putObject(Constant.USER_ID, String.valueOf(response.body().getId()));
+                Intent intent = new Intent(LoginActivity.this, DomainsActivity.class);
+                startActivity(intent);
+            }else {
+                Toast.makeText(LoginActivity.this, "Invalid username or password!", Toast.LENGTH_SHORT).show();
             }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                        Toast.makeText(LoginActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
+        }catch (Exception e) {
+            Toast.makeText(LoginActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+        }
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
 }

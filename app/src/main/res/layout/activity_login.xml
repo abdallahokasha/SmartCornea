@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_below="@+id/Login_textview"
-            android:hint="Enter your username ... "/>
+            android:hint="Eamil"/>
 
         <EditText
             android:id="@+id/password_text"
@@ -31,7 +31,7 @@
             android:inputType="textPassword"
             android:layout_marginTop="20dp"
             android:layout_below="@+id/username_text"
-            android:hint="Enter your password ... "
+            android:hint="Password"
             />
 
 

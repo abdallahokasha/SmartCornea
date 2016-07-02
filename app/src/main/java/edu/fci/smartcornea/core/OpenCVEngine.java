@@ -1,7 +1,5 @@
 package edu.fci.smartcornea.core;
 
-import android.util.Log;
-
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.face.Face;

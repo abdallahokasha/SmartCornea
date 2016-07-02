@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -24,7 +23,6 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import edu.fci.smartcornea.R;
@@ -203,10 +201,11 @@ public class TrainingActivity extends Activity implements CameraBridgeViewBase.C
     }
 
     private void saveRecognizerState() {
-        File tempDir = getDir("scTempDir", Context.MODE_PRIVATE);
-        File mTemplateFile = new File(tempDir, "template.xml");
-        mOpenCVEngine.saveRecognizer(mTemplateFile.getAbsolutePath());
         try {
+            File tempDir = getDir("scTempDir", Context.MODE_PRIVATE);
+            File mTemplateFile = new File(tempDir, "template.xml");
+            mOpenCVEngine.saveRecognizer(mTemplateFile.getAbsolutePath());
+
             FileInputStream is = new FileInputStream(mTemplateFile);
             StringBuilder sb = new StringBuilder();
             byte[] buffer = new byte[4096];
@@ -216,7 +215,7 @@ public class TrainingActivity extends Activity implements CameraBridgeViewBase.C
                     sb.append((char)buffer[i]);
                 }
             }
-            String state = new String(Base64.encode(sb.toString().getBytes(), Base64.DEFAULT), "UTF-8");
+            String state = new String(Base64.encode(sb.toString().getBytes(), Base64.DEFAULT));
             is.close();
             DataManager dm = DataManager.getInstance();
             communicator.storeStateFile((String)dm.getObject(Constant.DOMAIN_ID), state).enqueue(new Callback<Void>() {
@@ -240,6 +239,7 @@ public class TrainingActivity extends Activity implements CameraBridgeViewBase.C
                     });
                 }
             });
+            tempDir.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
