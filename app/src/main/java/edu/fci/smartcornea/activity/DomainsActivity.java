@@ -90,16 +90,22 @@ public class DomainsActivity extends Activity {
         }else {
             displaySpinner();
             final String id = String.valueOf(domains.get(index).getId());
-            try {
-                Response<String> response = communicator.loadStateFile(id).execute();
-                updateRecognizer(response.body());
-                dataManager.putObject(Constant.DOMAIN_ID, id);
-                Intent intent = new Intent(DomainsActivity.this, MainCameraActivity.class);
-                startActivity(intent);
-            }catch (Exception e) {
-                Toast.makeText(DomainsActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-            }
-            removeSpinner();
+            communicator.loadStateFile(id).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    removeSpinner();
+                    updateRecognizer(response.body());
+                    dataManager.putObject(Constant.DOMAIN_ID, id);
+                    Intent intent = new Intent(DomainsActivity.this, MainCameraActivity.class);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    removeSpinner();
+                    Toast.makeText(DomainsActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -110,19 +116,25 @@ public class DomainsActivity extends Activity {
 
     private void loadDomains() {
         displaySpinner();
-        try {
-            Response<List<Domain>> response = communicator.listDomains((String) dataManager.getObject(Constant.USER_ID)).execute();
-            if(response.code() == 200) {
-                domains = response.body();
-                updateDropDownList();
-            }else {
-                Toast.makeText(DomainsActivity.this, "Couldn't load domains!", Toast.LENGTH_SHORT).show();
+        communicator.listDomains((String) dataManager.getObject(Constant.USER_ID)).enqueue(new Callback<List<Domain>>() {
+            @Override
+            public void onResponse(Call<List<Domain>> call, Response<List<Domain>> response) {
+                removeSpinner();
+                if(response.code() == 200) {
+                    domains = response.body();
+                    updateDropDownList();
+                }else {
+                    Toast.makeText(DomainsActivity.this, "Couldn't load domains!", Toast.LENGTH_SHORT).show();
+                }
             }
-            removeSpinner();
-        }catch (Exception e) {
-            Toast.makeText(DomainsActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-            finish();
-        }
+
+            @Override
+            public void onFailure(Call<List<Domain>> call, Throwable t) {
+                removeSpinner();
+                Toast.makeText(DomainsActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
     }
 
     private ArrayList<String> getDomainsNames() {
